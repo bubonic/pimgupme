@@ -190,7 +190,7 @@ def main():
         
             if args.bbcode:
                 printed_urls = ['[img]{}[/img]'.format(image_url) for image_url in image_urls]
-                printedthmb_urls = ['[imag]{}[/img]'.format(thmb_url) for thmb_url in thmb_urls]
+                printedthmb_urls = ['[img]{}[/img]'.format(thmb_url) for thmb_url in thmb_urls]
             else:
                 printed_urls = image_urls
                 printedthmb_urls = thmb_urls
