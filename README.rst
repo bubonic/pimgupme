@@ -2,8 +2,6 @@
 pimgupme  (pim•gup•me)
 ===============
 
-|PyPI version| |Build Status| 
-
 Upload image file or image URL to the ptpimg.me image hosting.
 
 
