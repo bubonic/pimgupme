@@ -130,6 +130,105 @@ def upload(api_key, files_or_urls, timeout=None):
         results += uploader.upload_urls(*urls)
     return results
 
+def cthumbs(args):
+    Imagethumbs = []
+    print("Creating thumbnails for \033[30;106;52m%s\033[0m images..." %  len(args.images))
+    for img in args.images:
+        
+        if img.startswith('http'):
+            print("No support for URLs yet....Skipping....")
+            continue
+        
+        img = img.replace('./', '')
+        #print(img)
+        image = Image.open(img)
+        imgName, ext = img.split('.', 1)
+        if args.max_scale:
+            tmbheight = tmbwidth = int(args.max_scale)
+            
+            if int(image.size[1]) > int(image.size[0]) and int(image.size[1]) > int(args.max_scale):
+                hpercent = (tmbheight/float(image.size[1]))
+                wsize = int((float(image.size[0])*float(hpercent)))
+                image = image.resize((wsize, tmbheight), Image.ANTIALIAS)
+                #print(imgName + '_' + str(wsize) + 'x' + str(tmbheight) + '.' + ext)
+                tmbName = imgName + '_' + str(wsize) + 'x' + str(tmbheight) + '.' + ext
+            else:
+                wpercent = (tmbwidth/float(image.size[0]))
+                hsize = int((float(image.size[1])*float(wpercent)))
+                image = image.resize((tmbwidth,hsize), Image.ANTIALIAS)
+                #print(imgName + '_' + str(tmbwidth) + 'x' + str(hsize) + '.' + ext)
+                tmbName = imgName + '_' + str(tmbwidth) + 'x' + str(hsize) + '.' + ext
+        elif args.xlarge:
+            tmbheight = tmbwidth = 640
+            if int(image.size[1]) > int(image.size[0]) and int(image.size[1]) > 640:
+                hpercent = (tmbheight/float(image.size[1]))
+                wsize = int((float(image.size[0])*float(hpercent)))
+                image = image.resize((wsize, tmbheight), Image.ANTIALIAS)
+                #print(imgName + '_' + str(wsize) + 'x' + str(tmbheight) + '.' + ext)
+                tmbName = imgName + '_' + str(wsize) + 'x' + str(tmbheight) + '.' + ext
+            else:
+                wpercent = (tmbwidth/float(image.size[0]))
+                hsize = int((float(image.size[1])*float(wpercent)))
+                image = image.resize((tmbwidth,hsize), Image.ANTIALIAS)
+                #print(imgName + '_' + str(tmbwidth) + 'x' + str(hsize) + '.' + ext)
+                tmbName = imgName + '_' + str(tmbwidth) + 'x' + str(hsize) + '.' + ext
+        elif args.large:
+            tmbheight = tmbwidth = 480
+            if int(image.size[1]) > int(image.size[0]) and int(image.size[1]) > 480:
+                hpercent = (tmbheight/float(image.size[1]))
+                wsize = int((float(image.size[0])*float(hpercent)))
+                image = image.resize((wsize, tmbheight), Image.ANTIALIAS)
+                #print(imgName + '_' + str(wsize) + 'x' + str(tmbheight) + '.' + ext)
+                tmbName = imgName + '_' + str(wsize) + 'x' + str(tmbheight) + '.' + ext
+            else:
+                wpercent = (tmbwidth/float(image.size[0]))
+                hsize = int((float(image.size[1])*float(wpercent)))
+                image = image.resize((tmbwidth,hsize), Image.ANTIALIAS)
+                #print(imgName + '_' + str(tmbwidth) + 'x' + str(hsize) + '.' + ext)
+                tmbName = imgName + '_' + str(tmbwidth) + 'x' + str(hsize) + '.' + ext
+        else:
+            tmbheight = tmbwidth = 320
+            if int(image.size[1]) > int(image.size[0]) and int(image.size[1]) > 320:
+                hpercent = (tmbheight/float(image.size[1]))
+                wsize = int((float(image.size[0])*float(hpercent)))
+                image = image.resize((wsize, tmbheight), Image.ANTIALIAS)
+                #print(imgName + '_' + str(wsize) + 'x' + str(tmbheight) + '.' + ext)
+                tmbName = imgName + '_' + str(wsize) + 'x' + str(tmbheight) + '.' + ext
+            else:
+                wpercent = (tmbwidth/float(image.size[0]))
+                hsize = int((float(image.size[1])*float(wpercent)))
+                image = image.resize((tmbwidth,hsize), Image.ANTIALIAS)
+                #print(imgName + '_' + str(tmbwidth) + 'x' + str(hsize) + '.' + ext)
+                tmbName = imgName + '_' + str(tmbwidth) + 'x' + str(hsize) + '.' + ext                
+        Imagethumbs.append(tmbName)
+        image.save(tmbName)
+    print("Uploading thumbs.... \033[30;106;52m%s\033[0m" % len(Imagethumbs))
+    thmb_urls = upload(args.api_key, Imagethumbs)
+    print("Uploading images.... \033[30;106;52m%s\033[0m" % len(args.images))
+    image_urls = upload(args.api_key, args.images)
+    print("-------------------------------------URLs---------------------------------------------")
+
+    if args.bbcode:
+        printed_urls = ['[img]{}[/img]'.format(image_url) for image_url in image_urls]
+        printedthmb_urls = ['[img]{}[/img]'.format(thmb_url) for thmb_url in thmb_urls]
+    else:
+        printed_urls = image_urls
+        printedthmb_urls = thmb_urls
+    print("----fullsize----")
+    print(*printed_urls, sep='\n\n')
+    print("-----thumbs-----")
+    print(*printedthmb_urls, sep='\n\n')
+    print("------------------------------------[url][/url]----------------------------------------")
+    k=0
+    while k < len(thmb_urls):
+        print("\n[url=%s][img]%s[/img][/url]" % (image_urls[k], thmb_urls[k]), end=' ')
+        try:
+            print("[url=%s][img]%s[/img][/url]" % (image_urls[k+1], thmb_urls[k+1]), end='\n')
+        except IndexError as e:
+            pass
+        k += 2
+    print("\n\n")
+    sys.exit()
 
 def main():
     import argparse
@@ -147,6 +246,9 @@ def main():
     parser.add_argument('-b', '--bbcode', action='store_true', default=False, help='Output links in BBCode format (with [img] tags)')
     parser.add_argument('--nobell', action='store_true', default=False, help='Do not bell in a terminal on completion')
     parser.add_argument('--thumbnails', action='store_true', default=False, help='Convert images to thumbnails and provide a [url=][img][/img][/url] with url to full image and [img] of thumbnail. Default width is 320px.')
+    parser.add_argument('--large', action='store_true', default=False, help='Used in conjunction with --thumbnails. Creates large thumbnails, w|h <= 480')
+    parser.add_argument('--xlarge', action='store_true', default=False, help='Used in conjunction with --thumbnails. Creates extra-large thumbnails, w|h <= 640')
+    parser.add_argument('--max-scale', help='--max-scale <m>. Used in conjunction with --thumbnails. Will create thumbnails with max width or height equal to m pixels.')
 
     args = parser.parse_args()
 
@@ -155,60 +257,7 @@ def main():
         parser.error('Please specify an API key')
     try:
         if args.thumbnails: 
-            Imagethumbs = []
-            tmbheight = tmbwidth = 320
-            print("Creating thumbnails (x:y) 320 >= x,y for \033[30;106;52m%s\033[0m images..." % len(args.images))
-            for img in args.images:
-                
-                if img.startswith('http'):
-                    print("No support for URLs yet....Skipping....")
-                    continue
-                
-                img = img[2::]
-                #print(img)
-                image = Image.open(img)
-                imgName, ext = img.split('.', 1)
-                if int(image.size[1]) > int(image.size[0]) and int(image.size[1]) > 320:
-                    wpercent = (tmbheight/float(image.size[1]))
-                    wsize = int((float(image.size[0])*float(wpercent)))
-                    image = image.resize((wsize, tmbheight), Image.ANTIALIAS)
-                    #print(imgName + '_' + str(wsize) + 'x' + str(tmbheight) + '.' + ext)
-                    tmbName = imgName + '_' + str(wsize) + 'x' + str(tmbheight) + '.' + ext
-                else:
-                    wpercent = (tmbwidth/float(image.size[0]))
-                    hsize = int((float(image.size[1])*float(wpercent)))
-                    image = image.resize((tmbwidth,hsize), Image.ANTIALIAS)
-                    #print(imgName + '_' + str(tmbwidth) + 'x' + str(hsize) + '.' + ext)
-                    tmbName = imgName + '_' + str(tmbwidth) + 'x' + str(hsize) + '.' + ext                
-                Imagethumbs.append(tmbName)
-                image.save(tmbName)
-            print("Uploading thumbs.... \033[30;106;52m%s\033[0m" % len(Imagethumbs))
-            thmb_urls = upload(args.api_key, Imagethumbs)
-            print("Uploading images.... \033[30;106;52m%s\033[0m" % len(args.images))
-            image_urls = upload(args.api_key, args.images)
-            print("-------------------------------------URLs---------------------------------------------")
-        
-            if args.bbcode:
-                printed_urls = ['[img]{}[/img]'.format(image_url) for image_url in image_urls]
-                printedthmb_urls = ['[img]{}[/img]'.format(thmb_url) for thmb_url in thmb_urls]
-            else:
-                printed_urls = image_urls
-                printedthmb_urls = thmb_urls
-            print("----fullsize----")
-            print(*printed_urls, sep='\n\n')
-            print("-----thumbs-----")
-            print(*printedthmb_urls, sep='\n\n')
-            print("------------------------------------[url][/url]----------------------------------------")
-            k=0
-            while k < len(thmb_urls):
-                print("\n[url=%s][img]%s[/img][/url]" % (image_urls[k], thmb_urls[k]), end=' ')
-                try:
-                    print("[url=%s][img]%s[/img][/url]" % (image_urls[k+1], thmb_urls[k+1]), end='\n')
-                except IndexError as e:
-                    pass
-                k += 2
-            print("\n\n")
-            sys.exit()
+            cthumbs(args)
         else:
             
             image_urls = upload(args.api_key, args.images)
