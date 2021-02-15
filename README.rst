@@ -92,6 +92,22 @@ My typical usage for sites where there is no image resizing available is
 Currently ``--thumbnails`` doesn't support URLs in the xargs. This will be updated in the future. Necessary is to download images
 from URLs, create thumbnails, and up both of them. Not hard, but I just don't need that. Future releases may support it if there is interest. 
 
+## Command Line Utility
+
+I've included a small shell script to employ the command seen above. The bash shell script has the options as follow:
+
+```
+ParsePimGupMe v1.3.3 (octaLSD)
+ 
+Usage: ./parseptpimg.sh [options]
+ 
+options:                        -t|--thumbs , create thumbnails with default 320 max scale
+                                -s|--size SIZE, this is an option like '--xlarge' or '--large' or '--max-scale 960', enclosed in quotes
+                                -h|--help, print this screen
+```
+
+## Clipboard copy
+
 If pyperclip python package is installed, the URL will be additionally copied to the clipboard.
 
 If output is a terminal, a bell will be ringed on completion (can be disabled with a ``--nobell`` parameter).
@@ -105,6 +121,10 @@ You can specify multiple files and URLs on the command line:
 
 The resulting URLs are printed each on separate line, and copied to your
 clipboard with newlines in between.
+
+### Note
+
+The paperclip option does not currently work when creating thumbnails. If you would like this extra feature, please open up a issue for a new feature and I'll see what I can do. 
 
 License
 -------
